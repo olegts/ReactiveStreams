@@ -32,7 +32,7 @@ public class FluxCombineTest {
     @DisplayName("Shows how to wait sequential completion of two flux")
     void test02() {
         Mono<Void> completion = Flux.just(1, 2, 3)
-                .then(() -> Flux.<Void>empty()
+                .thenEmpty(Flux.<Void>empty()
                         .delaySubscription(Duration.ofSeconds(5)));
         completion.subscribe(t -> {}, ex -> {}, () -> System.out.println("Flux completed!"));
         Util.wait(10, SECONDS);
@@ -116,7 +116,7 @@ public class FluxCombineTest {
                         sink.next(i);
                     }
                 })
-                .switchOnError(Flux.just(4, 5, 6))
+                .onErrorResume(ex -> Flux.just(4, 5, 6))
                 .subscribe(System.out::println);
     }
 
@@ -136,9 +136,9 @@ public class FluxCombineTest {
     @DisplayName("Shows asynchronous merge of 2 streams")
     void test11() {
         Flux.range(1, 10)
-                .delay(Duration.ofSeconds(1))
+                .delayElements(Duration.ofSeconds(1))
                 .mergeWith(Flux.range(-10, 10)
-                        .delay(Duration.ofSeconds(1))
+                        .delayElements(Duration.ofSeconds(1))
                         .publishOn(Schedulers.newSingle("New thread"))
                  )
                 .subscribe(Util::printlnThread);

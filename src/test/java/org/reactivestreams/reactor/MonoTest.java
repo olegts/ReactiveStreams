@@ -19,18 +19,18 @@ public class MonoTest {
 
     @Test
     void monoOrMethod() throws InterruptedException {
-        Mono.delayMillis(2000)
+        Mono.delay(Duration.ofMillis(2000))
                 .map(l -> "Spring 4")
-                .or(Mono.delayMillis(1000).map(l -> "Spring 5"))
+                .or(Mono.delay(Duration.ofMillis(1000)).map(l -> "Spring 5"))
                 .subscribe(System.out::println);
         Thread.sleep(3000);
     }
 
     @Test
     void monoOrMethodShowingThreads() throws InterruptedException {
-        Mono.delayMillis(2000, Schedulers.newTimer("spring4"))
+        Mono.delay(Duration.ofMillis(2000), Schedulers.newParallel("spring4"))
                 .map(l -> "Spring 4")
-                .or(Mono.delayMillis(1000, Schedulers.newTimer("spring5")).map(l -> "Spring 5"))
+                .or(Mono.delay(Duration.ofMillis(1000), Schedulers.newParallel("spring5")).map(l -> "Spring 5"))
                 .subscribe(s -> {
                     System.out.println("[" + Thread.currentThread() + "] " + s);
                 });
@@ -39,7 +39,7 @@ public class MonoTest {
 
     @Test
     void monoThenOtherMethod() throws InterruptedException {
-        Mono.delayMillis(1000)
+        Mono.delay(Duration.ofMillis(1000))
                 .then(Mono.just("Other result"))
                 .subscribe(System.out::println);
         Thread.sleep(3000);
@@ -47,8 +47,8 @@ public class MonoTest {
 
     @Test
     void monoThenTransformMethod() throws InterruptedException {
-        Mono.delayMillis(1000)
-                .then(l -> Mono.just("Other result then " + l))
+        Mono.delay(Duration.ofMillis(1000))
+                .then(Mono.just("Other result then"))
                 .subscribe(System.out::println);
         Thread.sleep(2000);
     }
@@ -56,7 +56,7 @@ public class MonoTest {
     @Test
     void monoThenOtherMethodShowingThreads() throws InterruptedException {
         System.out.println(LocalTime.now());
-        Mono.delayMillis(1000)
+        Mono.delay(Duration.ofMillis(1000))
                 .doOnNext(l -> {
                     System.out.println("[" + Thread.currentThread() + "] " + l);
                     System.out.println(LocalTime.now());
@@ -76,7 +76,7 @@ public class MonoTest {
 
     @Test
     void monoElapsed() throws InterruptedException {
-        Mono.delayMillis(1000)
+        Mono.delay(Duration.ofMillis(1000))
                 .elapsed()
                 .subscribe(System.out::println);
         Thread.sleep(2000);

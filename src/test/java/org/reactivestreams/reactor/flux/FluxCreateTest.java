@@ -32,7 +32,7 @@ public class FluxCreateTest {
     @DisplayName("Create flux for range of values emitting them with delay")
     void test02() {
         Flux.range(10, 10)
-                .delay(Duration.ofSeconds(1))
+                .delayElements(Duration.ofSeconds(1))
                 .subscribe(Util::printlnThread);
         Util.wait(10, SECONDS);
     }
