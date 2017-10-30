@@ -128,12 +128,4 @@ public class MonoTest {
                 Mono.just("One")
         ).subscribe(System.out::println);
     }
-
-    @Test
-    void combineTwoMonos(){
-        Mono.when(Mono.just(1),
-                Mono.just("One"),
-                (i,s) -> s+i)
-        .subscribe(System.out::println);
-    }
 }

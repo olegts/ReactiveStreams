@@ -8,6 +8,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.reactivestreams.reactor.Util;
 import org.reactivestreams.reactor.util.SimpleAsyncMessageSource;
+import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
@@ -126,24 +127,24 @@ public class FluxSimpleTest {
             });
         })
                 //.log()
-                .subscribe(new Subscriber<Object>() {
+                .subscribe(new BaseSubscriber<Object>() {
                     @Override
-                    public void onSubscribe(Subscription subscription) {
-                        subscription.request(5);
+                    public void hookOnSubscribe(Subscription subscription) {
+                        request(5);
                     }
 
                     @Override
-                    public void onNext(Object o) {
+                    public void hookOnNext(Object o) {
                         Util.printlnThread("Received: " + o);
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {
+                    public void hookOnError(Throwable throwable) {
                         System.out.println("Exception occured: " + throwable);
                     }
 
                     @Override
-                    public void onComplete() {
+                    public void hookOnComplete() {
                         System.out.println("Completed!");
                     }
                 });

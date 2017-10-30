@@ -8,6 +8,7 @@ import org.reactivestreams.Subscription;
 import org.reactivestreams.reactor.Util;
 import org.reactivestreams.reactor.util.SimpleAsyncMessageSource;
 import org.reactivestreams.reactor.util.SimpleSubscriber;
+import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.BufferOverflowStrategy;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -28,24 +29,24 @@ public class FluxBackpressureTest {
     void test01() {
         Flux.interval(Duration.ofSeconds(1))
                 //.log()
-                .subscribe(new Subscriber<Long>() {
+                .subscribe(new BaseSubscriber<Long>() {
                     @Override
-                    public void onSubscribe(Subscription subscription) {
-                        subscription.request(5);
+                    public void hookOnSubscribe(Subscription subscription) {
+                        request(5);
                     }
 
                     @Override
-                    public void onNext(Long next) {
+                    public void hookOnNext(Long next) {
                         Util.printlnThread("Received: " + next);
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {
+                    public void hookOnError(Throwable throwable) {
                         System.out.println("Thrown: " + throwable);
                     }
 
                     @Override
-                    public void onComplete() {
+                    public void hookOnComplete() {
                         System.out.println("Completed!");
                     }
                 });
@@ -62,27 +63,27 @@ public class FluxBackpressureTest {
                         l -> System.out.println("Dropped: " + l),
                         BufferOverflowStrategy.DROP_OLDEST)
                 //.log()
-                .subscribe(new Subscriber<Long>() {
+                .subscribe(new BaseSubscriber<Long>() {
                     @Override
-                    public void onSubscribe(Subscription subscription) {
-                        subscription.request(3);
+                    public void hookOnSubscribe(Subscription subscription) {
+                        request(3);
                         //Schedule later demand
                         Schedulers.newParallel("myTimer").schedule(
                                 () -> subscription.request(5), 8, TimeUnit.SECONDS);
                     }
 
                     @Override
-                    public void onNext(Long next) {
+                    public void hookOnNext(Long next) {
                         Util.printlnThread("Received: " + next);
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {
+                    public void hookOnError(Throwable throwable) {
                         System.out.println("Thrown: " + throwable);
                     }
 
                     @Override
-                    public void onComplete() {
+                    public void hookOnComplete() {
                         System.out.println("Completed!");
                     }
                 });
